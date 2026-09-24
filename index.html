@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una web Importante JAJAJAJAJA</title>
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tipografía Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================
+           1. ESTILOS BASE Y ANIMACIÓN DE COLORES
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #0d0f12, #0a1f14, #2a1a3a, #0d0f12);
+            background-size: 400% 400%;
+            animation: fondoElegante 18s ease infinite;
+        }
+
+        @keyframes fondoElegante {
+            0% { background-position: 0% 50%; }
+            33% { background-position: 50% 100%; }
+            66% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #canvas-efectos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ==========================================
+           2. PANTALLA DE ACCESO (PASSWORD)
+           ========================================== */
+        #pantalla-bloqueo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 10, 15, 0.98);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .caja-login {
+            position: relative;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(111, 255, 176, 0.12), 0 0 26px rgba(255, 158, 205, 0.12);
+        }
+
+        .caja-login i {
+            font-size: 3rem;
+            color: #6fffb0;
+            margin-bottom: 15px;
+        }
+
+        .input-clave {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 1rem;
+            margin: 15px 0;
+            outline: none;
+        }
+
+        .btn-ingresar {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #6fffb0, #8be9fd);
+            color: #000;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-ingresar:hover { transform: scale(1.02); }
+
+        .letra-secreta-lobby {
+            position: absolute;
+            bottom: 16px;
+            right: 20px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: rgba(201, 163, 255, 0.55);
+            opacity: 0;
+            pointer-events: none;
+            animation: apareceYDesaparece 4s ease-in-out 1.2s 1 forwards;
+        }
+
+        @keyframes apareceYDesaparece {
+            0% { opacity: 0; transform: translateY(6px); }
+            20% { opacity: 1; transform: translateY(0); }
+            75% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ==========================================
+           3. MENÚ PRINCIPAL
+           ========================================== */
+        #menu-principal {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .titulo-menu {
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, #6fffb0, #c9a3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            font-weight: 800;
+        }
+
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .btn-menu-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-menu-item:hover {
+            background: rgba(201, 163, 255, 0.15);
+            border-color: #c9a3ff;
+            box-shadow: 0 8px 24px rgba(255, 158, 205, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .btn-menu-item i {
+            font-size: 2.2rem;
+            color: #6fffb0;
+        }
+
+        .btn-menu-item span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* ==========================================
+           4. ESTRUCTURA DE SECCIONES & BOTÓN VOLVER
+           ========================================== */
+        .seccion-modulo {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .btn-volver-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #6fffb0;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-volver-menu:hover {
+            background: rgba(80, 250, 123, 0.2);
+        }
+
+        .titulo-seccion {
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            color: #c9a3ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid rgba(189, 147, 249, 0.2);
+            padding-bottom: 10px;
+        }
+
+        /* ==========================================
+           5. CONTADOR EN VIVO
+           ========================================== */
+        .contador-box {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .unidad-tiempo {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .unidad-tiempo span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #6fffb0;
+        }
+
+        .unidad-tiempo label { font-size: 0.8rem; color: #aaa; }
+
+        /* ==========================================
+           6. TARJETAS FLIP 3D
+           ========================================== */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card-3d { height: 180px; perspective: 1000px; cursor: pointer; }
+        .card-inner {
+            position: relative; width: 100%; height: 100%;
+            text-align: center; transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .card-3d:hover .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 16px;
+            padding: 20px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-front { background: rgba(20, 20, 30, 0.7); color: #6fffb0; }
+        .card-back {
+            background: linear-gradient(135deg, #282a36, #44475a);
+            color: #f8f8f2; transform: rotateY(180deg);
+            border: 1px solid #c9a3ff; font-size: 0.9rem;
+        }
+
+        /* ==========================================
+           7. LINTERNA DETECTIVE
+           ========================================== */
+        .instrucciones-linterna {
+            background: rgba(80, 250, 123, 0.1);
+            border: 1px solid #6fffb0;
+            padding: 15px; border-radius: 12px;
+            text-align: center; margin-bottom: 15px;
+            font-weight: 600; color: #6fffb0;
+        }
+
+        #contenedor-linterna {
+            position: relative;
+            width: 100%; height: 400px;
+            background: #000; border-radius: 16px;
+            overflow: hidden; cursor: crosshair;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mascara-oscura {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle 80px at var(--x, -100px) var(--y, -100px), transparent 0%, rgba(0,0,0,0.98) 100%);
+            pointer-events: none; z-index: 2;
+        }
+
+        .letra-oculta {
+            position: absolute; color: #c9a3ff;
+            font-weight: 800; font-size: 1.1rem;
+            z-index: 1; opacity: 0.95;
+        }
+
+        /* ==========================================
+           8. LÍNEA DE TIEMPO
+           ========================================== */
+        .timeline { position: relative; padding: 10px 0; }
+        .timeline::before {
+            content: ''; position: absolute; left: 50%;
+            width: 2px; height: 100%; background: rgba(255,255,255,0.1);
+            transform: translateX(-50%);
+        }
+        .timeline-item { margin-bottom: 20px; width: 50%; position: relative; }
+        .timeline-item.left { left: 0; padding-right: 20px; text-align: right; }
+        .timeline-item.right { left: 50%; padding-left: 20px; text-align: left; }
+        .timeline-content {
+            background: rgba(0,0,0,0.4); padding: 15px;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ==========================================
+           9. TRIVIA & MODAL
+           ========================================== */
+        .opciones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-opcion {
+            padding: 12px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            color: #fff; cursor: pointer; transition: 0.2s; text-align: left;
+        }
+        .btn-opcion:hover { background: rgba(189, 147, 249, 0.2); }
+        .btn-pista {
+            background: rgba(241, 250, 140, 0.1); border: 1px dashed #f1fa8c;
+            color: #f1fa8c; padding: 8px 12px; border-radius: 8px;
+            cursor: pointer; margin-bottom: 10px; font-size: 0.85rem;
+        }
+
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85); display: flex;
+            justify-content: center; align-items: center; z-index: 3000;
+        }
+        .modal-body {
+            background: #191a21; border: 1px solid #c9a3ff;
+            padding: 30px; border-radius: 20px; max-width: 500px;
+            width: 90%; text-align: center; position: relative;
+        }
+
+        .texto-desvanecido { transition: opacity 3s ease; opacity: 1; }
+        .texto-desvanecido.fade-out { opacity: 0; }
+
+        /* ==========================================
+           10. BUZÓN EL INICIO
+           ========================================== */
+        .sobre-unico {
+            background: linear-gradient(135deg, rgba(80, 250, 123, 0.1), rgba(189, 147, 249, 0.1));
+            border: 2px solid #6fffb0; border-radius: 20px;
+            padding: 40px; text-align: center; cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .sobre-unico:hover { transform: translateY(-5px); }
+        .sobre-unico i { font-size: 3.5rem; color: #c9a3ff; margin-bottom: 15px; }
+
+        .pd-oculta {
+            margin-top: 20px; padding: 10px;
+            background: rgba(0,0,0,0.4); border-radius: 8px;
+            font-size: 0.8rem; color: #888; font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before { left: 10px; }
+            .timeline-item { width: 100%; padding-left: 25px !important; text-align: left !important; }
+            .timeline-item.right { left: 0; }
+            .opciones-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-efectos"></canvas>
+    <button id="btn-sonido" onclick="alternarSonido()" aria-label="Sonido" style="position:fixed;bottom:16px;left:16px;z-index:2500;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.55);color:#6fffb0;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-volume-high"></i></button>
+
+    <!-- PANTALLA DE BLOQUEO -->
+    <div id="pantalla-bloqueo">
+        <div class="caja-login">
+            <i class="fa-solid fa-lock"></i>
+            <h2>Acceso Restringido</h2>
+            <p>Ingresá la palabra clave del protocolo</p>
+            <input type="password" id="input-clave" class="input-clave" placeholder="Ingresá la clave...">
+            <button class="btn-ingresar" onclick="verificarClave()">DESBLOQUEAR</button>
+            <p id="msj-error" style="color:#ff5555; font-size:0.8rem; margin-top:10px;" class="hidden">Clave incorrecta... Por el amor de Dios, ¡pensá bien!</p>
+            <span class="letra-secreta-lobby">E</span>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL CON NAVEGACIÓN -->
+    <main id="contenido-principal" class="hidden">
+
+        <!-- MENÚ PRINCIPAL -->
+        <div id="menu-principal">
+            <h1 class="titulo-menu">Una web Importante JAJAJAJAJA</h1>
+            <div class="grid-menu">
+                <div class="btn-menu-item" onclick="navegarA('sec-contador')">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Tiempo de Tortura</span>
+                </div>
+                <div class="btn-menu-item" onclick="navegarA('sec-detective')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>The Missions</span>
+                </div>
+                <div class="btn-menu-item" onclick="navegarA('sec-historia')">
+                    <i class="fa-solid fa-timeline"></i>
+                    <span>Fases de la Historia</span>
+                </div>
+                <div class="btn-menu-item" onclick="navegarA('sec-nde')">
+                    <i class="fa-solid fa-door-closed"></i>
+                    <span>Entra Acá Nde</span>
+                </div>
+                <div class="btn-menu-item" onclick="navegarA('sec-inicio')">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Aquel Ejercicio de Quimi Brou</span>
+                </div>
+                <div class="btn-menu-item hidden" id="btn-23noche" onclick="navegarA('sec-23noche')">
+                    <i class="fa-solid fa-cake-candles"></i>
+                    <span>El 23 a la Noche</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: CONTADOR -->
+        <section id="sec-contador" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-clock"></i> Tiempo de Tortura</h2>
+            <p style="text-align: center; color: #aaa;">Calculando el tiempo exacto desde aquel viernes 19 de abril de 2024:</p>
+            <div class="contador-box">
+                <div class="unidad-tiempo"><span id="dias">0</span><label>Días</label></div>
+                <div class="unidad-tiempo"><span id="horas">0</span><label>Horas</label></div>
+                <div class="unidad-tiempo"><span id="minutos">0</span><label>Minutos</label></div>
+                <div class="unidad-tiempo"><span id="segundos">0</span><label>Segundos</label></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: LINTERNA DETECTIVE -->
+        <section id="sec-detective" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-magnifying-glass"></i> The Missions</h2>
+            <div class="instrucciones-linterna">
+                📝 Agarra una hoja y escribe la letra según el orden de número que veas
+            </div>
+            <div id="contenedor-linterna" onmousemove="moverLinterna(event)" ontouchmove="moverLinternaTactil(event)">
+                <div class="mascara-oscura" id="mascara"></div>
+                <!-- Frase: Gracias por ser el lugar donde puedo ser yo, feliz. -->
+                <div class="letra-oculta" style="top: 10%; left: 10%;">G₁</div>
+                <div class="letra-oculta" style="top: 80%; left: 85%;">r₂</div>
+                <div class="letra-oculta" style="top: 25%; left: 70%;">a₃</div>
+                <div class="letra-oculta" style="top: 60%; left: 15%;">c₄</div>
+                <div class="letra-oculta" style="top: 35%; left: 40%;">i₅</div>
+                <div class="letra-oculta" style="top: 90%; left: 30%;">a₆</div>
+                <div class="letra-oculta" style="top: 15%; left: 85%;">s₇</div>
+
+                <div class="letra-oculta" style="top: 70%; left: 50%;">p₈</div>
+                <div class="letra-oculta" style="top: 45%; left: 80%;">o₉</div>
+                <div class="letra-oculta" style="top: 85%; left: 10%;">r₁₀</div>
+
+                <div class="letra-oculta" style="top: 50%; left: 25%;">s₁₁</div>
+                <div class="letra-oculta" style="top: 20%; left: 30%;">e₁₂</div>
+                <div class="letra-oculta" style="top: 75%; left: 70%;">r₁₃</div>
+
+                <div class="letra-oculta" style="top: 10%; left: 50%;">e₁₄</div>
+                <div class="letra-oculta" style="top: 65%; left: 85%;">l₁₅</div>
+
+                <div class="letra-oculta" style="top: 30%; left: 15%;">l₁₆</div>
+                <div class="letra-oculta" style="top: 85%; left: 60%;">u₁₇</div>
+                <div class="letra-oculta" style="top: 40%; left: 60%;">g₁₈</div>
+                <div class="letra-oculta" style="top: 15%; left: 65%;">a₁₉</div>
+                <div class="letra-oculta" style="top: 55%; left: 75%;">r₂₀</div>
+
+                <div class="letra-oculta" style="top: 75%; left: 35%;">d₂₁</div>
+                <div class="letra-oculta" style="top: 20%; left: 80%;">o₂₂</div>
+                <div class="letra-oculta" style="top: 90%; left: 80%;">n₂₃</div>
+                <div class="letra-oculta" style="top: 35%; left: 90%;">d₂₄</div>
+                <div class="letra-oculta" style="top: 60%; left: 60%;">e₂₅</div>
+
+                <div class="letra-oculta" style="top: 40%; left: 10%;">p₂₆</div>
+                <div class="letra-oculta" style="top: 80%; left: 20%;">u₂₇</div>
+                <div class="letra-oculta" style="top: 15%; left: 20%;">e₂₈</div>
+                <div class="letra-oculta" style="top: 70%; left: 90%;">d₂₉</div>
+                <div class="letra-oculta" style="top: 45%; left: 45%;">o₃₀</div>
+
+                <div class="letra-oculta" style="top: 25%; left: 5%;">s₃₁</div>
+                <div class="letra-oculta" style="top: 65%; left: 30%;">e₃₂</div>
+                <div class="letra-oculta" style="top: 10%; left: 35%;">r₃₃</div>
+
+                <div class="letra-oculta" style="top: 50%; left: 90%;">y₃₄</div>
+                <div class="letra-oculta" style="top: 85%; left: 45%;">o₃₅</div>
+                <div class="letra-oculta" style="top: 30%; left: 50%;">f₃₆</div>
+                <div class="letra-oculta" style="top: 55%; left: 5%;">e₃₇</div>
+                <div class="letra-oculta" style="top: 70%; left: 5%;">l₃₈</div>
+                <div class="letra-oculta" style="top: 5%; left: 75%;">i₃₉</div>
+                <div class="letra-oculta" style="top: 95%; left: 90%;">z₄₀</div>
+            </div>
+            <button class="btn-ingresar" style="margin-top:15px;" onclick="lanzarEfectos(); alert('¡Espero que hayas descifrado la frase completa en tu hoja!')">¡Ya armé la frase!</button>
+        </section>
+
+        <!-- SECCIÓN 4: LÍNEA DE TIEMPO -->
+        <section id="sec-historia" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-timeline"></i> Fases de la Historia</h2>
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h4 style="color:#6fffb0;">Viernes 19 de Abril</h4>
+                        <p>El día que no sabía resolver el ejercicio de química y fui a pedirte auxilio.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h4 style="color:#c9a3ff;">La Silla de Madera</h4>
+                        <p>Sentarme ahí a tu lado se sintió instantáneamente como estar en casa.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h4 style="color:#6fffb0;">Aprender de los Errores</h4>
+                        <p>Comprender los momentos difíciles y elegir siempre ser mejor contigo.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h4 style="color:#c9a3ff;">Ayer, Hoy y Mañana</h4>
+                        <p>Las únicas 3 ocasiones en las que quiero que seas mi hermana.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: ENTRA ACÁ NDE (zona con clave propia) -->
+        <section id="sec-nde" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-door-closed"></i> Entra Acá Nde</h2>
+
+            <div id="caja-clave-nde" class="caja-login" style="margin: 0 auto;">
+                <i class="fa-solid fa-lock"></i>
+                <h2>Zona Restringida</h2>
+                <p>Esto va por otro lado...</p>
+                <input type="password" id="input-clave-nde" class="input-clave" placeholder="Ingresá la clave...">
+                <button class="btn-ingresar" onclick="verificarClaveNde()">DESBLOQUEAR</button>
+                <p id="msj-error-nde" style="color:#ff5555; font-size:0.8rem; margin-top:10px;" class="hidden">Clave incorrecta, seguí pensando...</p>
+                <div class="pd-oculta" style="text-align:left; margin-top:20px;">
+                    <strong>Pdt:</strong> fijate en todas las numeraciones extrañas (Para que tengas un ejemplo ve a la descripción de tu último seguidor (En IG) (WTF un paréntesis dentro de otro paréntesis, eso haría 3 paréntesis (Referencia) ))
+                </div>
+            </div>
+
+            <div id="contenido-nde" class="hidden" style="text-align:center; margin-top:20px;">
+                <h3 style="font-size:1.6rem; background: linear-gradient(90deg, #6fffb0, #c9a3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Próximamente</h3>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6: CARTA EL INICIO -->
+        <section id="sec-inicio" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-envelope"></i> Aquel Ejercicio de Quimi Brou</h2>
+            <div class="sobre-unico" onclick="abrirCarta()">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <h3>El Inicio de Todo</h3>
+                <p style="color:#aaa; font-size:0.85rem; margin-top:5px;">Escrita el 29 de agosto de 2026 a las 23:20 hs</p>
+                <p style="color:#6fffb0; margin-top:10px; font-weight:600;">[ Toca para abrir el relato ]</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 7: EL 23 A LA NOCHE (solo visible de 22:00 a 23:59) -->
+        <section id="sec-23noche" class="seccion-modulo hidden">
+            <button class="btn-volver-menu" onclick="volverMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <h2 class="titulo-seccion"><i class="fa-solid fa-cake-candles"></i> El 23 a la Noche</h2>
+            <p style="font-size:0.95rem; line-height:1.8; color:#f8f8f2; white-space: pre-line; text-align:left;">
+Sinceramente no se como empezar esto
+
+Hoy fue un muy buen día
+
+Hasta el infinito y más allá estoy orgulloso de ser parte de tu vida
+
+Siendo Tu amigo
+Hermano
+Conocido
+Lo que sea
+
+Con tal de poder estar siempre a tu lado ya estoy más que satisfecho, no sos una MJ sos <strong style="color:#6fffb0;">LA MJ</strong>
+
+No hay palabras que puedan definir Sinceramente todo lo que en verdad quiero decirte
+
+Kore, se puede decir <em>Inefable...</em>
+Pero se queda chico eso
+
+En fin Verro
+Que nuestra amistad sea siempre etérea
+Tekueme brother</p>
+            <p style="font-size:1.3rem; font-weight:800; text-align:center; margin-top:15px; background: linear-gradient(90deg, #6fffb0, #c9a3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Feliz Cumpleaños</p>
+            <div class="pd-oculta">
+                <strong>Pdt:</strong> Me quede con ganas de la peli realmente JAJAJAJAJAJAJAJA
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL PARA LA CARTA COMPLETA -->
+    <div id="modal-carta" class="modal hidden">
+        <div class="modal-body" style="max-height:85vh; overflow-y:auto; text-align:left;">
+            <span style="position:absolute; top:15px; right:20px; color:#ff5555; cursor:pointer; font-size:1.5rem;" onclick="cerrarCarta()">&times;</span>
+            <h2 style="color:#6fffb0; margin-bottom:15px;">El Inicio - Para Vero</h2>
+            <p style="font-size:0.95rem; line-height:1.7; color:#f8f8f2; white-space: pre-line;">
+                Recuerdo muy bien ese día realmente, menos mal que ese día andaba hueco y necesitaba ayuda.
+
+                Desde el primer momento en mi vida que te observé de frente Verónica, supe que serías alguien importante en mi vida. Pero como estamos en la zona de la web donde cuento como nos conocimos no me enredo tanto.
+
+                Bendito sea el día en el que no supe resolver ese ejercicio de Química y fui a pedirte auxilio. Recuerdo perfectamente ese 19 de abril (chequeado en el calendario solo para confirmar) que me levanté y supe a quien acudir, fui junto a ti y recuerdo muy bien:
+
+                <em>"Hola, ¿entendés el 3er (o cuarto ejercicio, debatible si era el 3ro o 4to) porque legalmente estoy re perdido?"</em>
+
+                Accediste con buen corazón a ayudarme y al sentarme en esa silla de madera me sentí como si estuviera en casa desde ese viernes ya nunca te separaste de mí, tuve errores (ENORMES) pero no hay nada que pueda hacer para remediarlos solo ser mejor contigo.
+
+                Quiero que sepas que hoy 29 de agosto de 2026 siendo las 23:20 de la noche me tomo el tiempo de escribir esto para decirte que a pesar de todo lo que pasó SIEMPRE estuviste al lado mío y eso lo valoro como no tenés idea.
+
+                Solamente en 3 ocasiones quiero que seas mi mejor amiga/hermana:
+                <strong>Ayer, Hoy y Mañana...</strong>
+
+                El pasado no se puede cambiar pero sí se puede vivir el hoy.
+                Te quiero un montonazo Verrrrrrillo.
+            </p>
+            
+            <div class="pd-oculta">
+                <strong>P.D.</strong> Yo siempre me toque
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL -->
+    <script>
+        // 1. SEGURIDAD CON CLAVE ACTUALIZADA
+        function verificarClave() {
+            const input = document.getElementById('input-clave').value.trim().toLowerCase();
+            const msjError = document.getElementById('msj-error');
+            
+            if (input === "tangamandapio") {
+                document.getElementById('pantalla-bloqueo').classList.add('hidden');
+                document.getElementById('contenido-principal').classList.remove('hidden'); reproducirLista('menu');
+                iniciarContador();
+                lanzarEfectos();
+                verificarVentana23();
+                setInterval(verificarVentana23, 60000);
+            } else {
+                msjError.classList.remove('hidden');
+            }
+        }
+
+        // 2. SISTEMA DE NAVEGACIÓN DE MENÚ
+        function navegarA(idSeccion) {
+            document.getElementById('menu-principal').classList.add('hidden');
+            document.querySelectorAll('.seccion-modulo').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(idSeccion).classList.remove('hidden'); reproducirLista(idSeccion==='sec-nde' && !document.getElementById('contenido-nde').classList.contains('hidden') ? 'nde-ok' : idSeccion);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function volverMenu() {
+            document.querySelectorAll('.seccion-modulo').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('menu-principal').classList.remove('hidden'); reproducirLista('menu');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 2b. VENTANA HORARIA PARA "EL 23 A LA NOCHE" (22:00 a 23:59)
+        function verificarVentana23() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            const btn = document.getElementById('btn-23noche');
+            if (!btn) return;
+            if (hora === 22 || hora === 23) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        // 3. CONTADOR DE TIEMPO EN VIVO
+        function iniciarContador() {
+            const fechaInicio = new Date('2024-04-19T00:00:00');
+            
+            function actualizar() {
+                const ahora = new Date();
+                const diferencia = ahora - fechaInicio;
+                
+                const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+                const minutos = Math.floor((diferencia / 1000 / 60) % 60);
+                const segundos = Math.floor((diferencia / 1000) % 60);
+
+                document.getElementById('dias').innerText = dias;
+                document.getElementById('horas').innerText = horas;
+                document.getElementById('minutos').innerText = minutos;
+                document.getElementById('segundos').innerText = segundos;
+            }
+            actualizar();
+            setInterval(actualizar, 1000);
+        }
+
+        // 4. LINTERNA DETECTIVE
+        function moverLinterna(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            document.getElementById('mascara').style.setProperty('--x', `${x}px`);
+            document.getElementById('mascara').style.setProperty('--y', `${y}px`);
+        }
+
+        function moverLinternaTactil(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            document.getElementById('mascara').style.setProperty('--x', `${x}px`);
+            document.getElementById('mascara').style.setProperty('--y', `${y}px`);
+        }
+
+        // 5. ZONA "ENTRA ACÁ NDE" Y MODAL DE LA CARTA
+        function verificarClaveNde() {
+            let input = document.getElementById('input-clave-nde').value.trim().toLowerCase();
+            input = input.replace(/\s+/g, '');
+            input = input.replace(/♥️|♥|❤️|❤|♡/g, '<3');
+            const msj = document.getElementById('msj-error-nde');
+
+            if (input === "tekueme<3" || input === "tekueme") {
+                document.getElementById('caja-clave-nde').classList.add('hidden');
+                document.getElementById('contenido-nde').classList.remove('hidden'); reproducirLista('nde-ok');
+                msj.classList.add('hidden');
+                lanzarEfectos();
+            } else {
+                msj.classList.remove('hidden');
+            }
+        }
+
+        function abrirCarta() {
+            document.getElementById('modal-carta').classList.remove('hidden');
+        }
+
+        function cerrarCarta() {
+            document.getElementById('modal-carta').classList.add('hidden');
+        }
+
+        // 6. EFECTO PARTICULAS (CANVAS)
+        function lanzarEfectos() {
+            const canvas = document.getElementById('canvas-efectos');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particulas = [];
+            const colores = ['#6fffb0', '#c9a3ff', '#ff79c6', '#8be9fd'];
+
+            for (let i = 0; i < 60; i++) {
+                particulas.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    color: colores[Math.floor(Math.random() * colores.length)],
+                    size: Math.random() * 5 + 2,
+                    speedY: Math.random() * 2 + 1
+                });
+            }
+
+            function animar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particulas.forEach((p, i) => {
+                    p.y += p.speedY;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (p.y > canvas.height) particulas[i].y = -10;
+                });
+                requestAnimationFrame(animar);
+            }
+            animar();
+        }
+    
+        // 7. MÚSICA POR SECCIÓN
+        const P = n => `musica/${n}.m4a`;
+        const MUSICA = {
+            'menu':          [P('yonaguni'), P('lasanta'), P('nene')],
+            'sec-contador':  [P('esplin'), P('cinturon')],
+            'sec-detective': [P('nico'), P('ramona')],
+            'sec-historia':  [P('invierno'), P('memorias'), P('dehielo')],
+            'sec-nde':       null,               // zona con clave: silencio hasta desbloquear
+            'nde-ok':        [P('ascensor')],    // solo en "Próximamente"
+            'sec-inicio':    [P('malo'), P('yano')],
+            'sec-23noche':   [P('yoko'), P('suki')]
+        };
+        const audioFondo = new Audio();
+        audioFondo.volume = 0.5;
+        let listaActual = null, cola = [], idxCola = 0;
+
+        function barajar(a) {
+            a = a.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+        function sonarActual() {
+            audioFondo.src = cola[idxCola];
+            audioFondo.play().catch(() => {});
+        }
+        function reproducirLista(clave) {
+            if (clave === listaActual) return;
+            listaActual = clave;
+            const pistas = MUSICA[clave];
+            if (!pistas) { audioFondo.pause(); return; }
+            cola = barajar(pistas);
+            idxCola = 0;
+            audioFondo.loop = (pistas.length === 1);
+            sonarActual();
+        }
+        audioFondo.addEventListener('ended', () => {
+            idxCola = (idxCola + 1) % cola.length;
+            sonarActual();
+        });
+        function alternarSonido() {
+            audioFondo.muted = !audioFondo.muted;
+            document.getElementById('btn-sonido').innerHTML = audioFondo.muted
+                ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+        }
+    </script>
+</body>
+</html>
